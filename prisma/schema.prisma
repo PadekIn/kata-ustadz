@@ -8,8 +8,319 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum Role {
+  Admin
+  User
+}
+
+enum Gender {
+  male
+  female
+}
+
+enum MessageType {
+  Promosi
+  Notifikasi
+}
+
+enum TypeContent {
+  Artikel
+  Video
+  PDF
+}
+
+enum TypeWatchLater {
+  Content
+  Module
+}
+
+enum TypeOrder {
+  Content
+  package
+}
+enum OrderStatus {
+  Issued
+  Unpaid
+  Cancelled
+  Expired
+}
+
+
+model Notification {
+  id          Int         @id @default(autoincrement())
+  accountId   Int         @map("account_id")
+  type        MessageType @default(Promosi)
+  title       String
+  description String
+  createdAt   DateTime    @default(now()) @map("created_at")
+  isRead      Boolean     @default(false) @map("is_read")
+
+  Account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model Account {
+  id                       Int       @id @default(autoincrement())
+  email                    String    @unique
+  password                 String
+  role                     Role      @default(User)
+  otpCode                  String?   @map("otp_code")
+  otpExpiration            DateTime? @map("otp_expiration")
+  isActive                 Boolean   @default(true) @map("is_active")
+  isVerified               Boolean   @default(false) @map("is_verified")
+  createdAt                DateTime  @default(now()) @map("created_at")
+  updatedAt                DateTime  @updatedAt @map("updated_at")
+
+  user         User?
+  Notification Notification[]
+
+  @@map("accounts")
+}
+
 model User {
-  id    Int    @id @default(autoincrement())
-  name  String
-  email String @unique
+  id          Int      @id @default(autoincrement())
+  accountId   Int      @unique @map("account_id")
+  fullName    String   @unique @map("full_name")
+  phoneNumber String?  @unique @map("phone_number")
+  gender      Gender  
+  subscription Boolean  @default(false)
+  subscriptionUntil DateTime? @map("subscription_until")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  Account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  Content Content[]
+  ListContent ListContent[]
+  Module Module[]
+  ListModule ListModule[]
+  Comment Comment[]
+  Like Like[]
+  History History[]
+  WatchLater WatchLater[]
+  purchasedContent purchasedContent[]
+  Order Order[]
+
+  @@map("users")
+}
+
+model Category {
+  id          Int         @id @default(autoincrement())
+  name        String
+  isActive    Boolean     @default(true) @map("is_active")
+  isDelete    Boolean     @default(false) @map("is_delete")
+  deletedAt   DateTime?   @map("deleted_at")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  ListContent ListContent[]
+
+  @@map("categories")
+}
+
+model Content {
+  id          Int         @id @default(autoincrement())
+  typeId      TypeContent
+  image       String
+  title       String
+  description String
+  link        String
+  price       Int
+  createBy    Int         @map("create_by")
+  isActive    Boolean     @default(true) @map("is_active")
+  isDelete    Boolean     @default(false) @map("is_delete")
+  deletedAt   DateTime?   @map("deleted_at")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  User User @relation(fields: [createBy], references: [id], onDelete: Cascade)
+
+  ListContent ListContent[]
+  ListModule ListModule[]
+  Comment Comment[]
+  Like Like[]
+  History History[]
+  WatchLater WatchLater[]
+  purchasedContent purchasedContent[]
+  Order Order[]
+
+  @@map("contents")
+}
+
+model ListContent {
+  contentId  Int @map("id_content")
+  categoryId Int @map("id_category")
+  createBy   Int @map("create_by")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  Content  Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  Category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  User User @relation(fields: [createBy], references: [id], onDelete: Cascade)
+
+  @@id([contentId, categoryId])
+  @@map("list_contents")
+}
+
+model Module {
+  id          Int      @id @default(autoincrement())
+  name        String
+  image       String
+  title       String
+  description String
+  createBy    Int      @map("create_by")
+  isActive    Boolean  @default(true) @map("is_active")
+  isDelete    Boolean  @default(false) @map("is_delete")
+  deletedAt   DateTime? @map("deleted_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  User User @relation(fields: [createBy], references: [id], onDelete: Cascade)
+
+  ListModule ListModule[]
+  WatchLater WatchLater[]
+
+  @@map("modules")
+}
+
+model ListModule {
+  moduleId    Int @map("id_module")
+  contentId   Int @map("id_content")
+  index       Int
+  createBy    Int @map("create_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  Module  Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  Content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  User User @relation(fields: [createBy], references: [id], onDelete: Cascade)
+
+  @@id([moduleId, contentId])
+  @@map("list_modules")
+}
+
+model Comment {
+  id          Int      @id @default(autoincrement())
+  contentId   Int      @map("id_content")
+  userId      Int      @map("id_user")
+  comment     String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@map("comments")
+}
+
+model Like {
+  id          Int      @id @default(autoincrement())
+  contentId   Int      @map("id_content")
+  userId      Int      @map("id_user")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@map("likes")
+}
+
+model History {
+  id          Int      @id @default(autoincrement())
+  contentId   Int      @map("id_content")
+  userId      Int      @map("id_user")
+  currentTime DateTime? @map("current_time")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@map("histories")
+}
+
+model WatchLater {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("id_user")
+  type        TypeWatchLater
+  contentId   Int?      @map("id_content")
+  moduleId    Int?      @map("id_module")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Content Content? @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  Module Module? @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@map("watch_laters")
+}
+
+model purchasedContent {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("id_user")
+  contentId   Int      @map("id_content")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@map("purchased_contents")
+}
+
+model Package {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  duration    Int
+  price       Int
+  isActive    Boolean  @default(true) @map("is_active")
+  isDelete    Boolean  @default(false) @map("is_delete")
+  deletedAt   DateTime? @map("deleted_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  Order Order[]
+
+  @@map("package")
+}
+
+model Order {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("id_user")
+  type        TypeOrder
+  paymentId   String   @map("payment_id")
+  packageId   Int?     @map("id_packet")
+  contentId   Int?     @map("id_content")
+  status      OrderStatus
+  activeUntil DateTime? @map("active_until")
+  detailPrice Json
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Package Package? @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  Content Content? @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@map("orders")
+}
+
+model Payment {
+  id          Int      @id @default(autoincrement())
+  method      String
+  status      String
+  amount      Int
+  payload     Json
+  transactionId String @map("transaction_id")
+  orderId     Int    @map("order_id")
+  fraudStatus String @map("fraud_status")
+  validUntil  DateTime @map("valid_until")
+  paymentDate DateTime @map("payment_date")
+  token      String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("payments")
 }

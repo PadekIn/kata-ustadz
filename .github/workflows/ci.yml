@@ -44,9 +44,8 @@ jobs:
         run: npm run test
 
       # Step 6: Upload coverage to Codecov
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
         with:
-          files: ./coverage/lcov.info
-          flags: unittests
           token: ${{ secrets.CODECOV_TOKEN }}
+          slug: PADEK-IN/kata-ustadz

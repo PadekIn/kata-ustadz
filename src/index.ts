@@ -1,10 +1,11 @@
 import "dotenv/config";
 import http from "http";
 import { app } from "./configs/app";
-import listEndpoints from 'express-list-endpoints';
+import listEndpoints from "express-list-endpoints";
 
 const port = process.env.PORT || 8000;
-const host = process.env.HOST || 'localhost';
+const host = process.env.HOST || "localhost";
+const domain = host === "localhost" ? `${host}:${port}` : host;
 
 const server = http.createServer(app);
 
@@ -20,7 +21,7 @@ try {
     };
 
     server.listen(port, () => {
-        console.log(`🚀 Server is on ${host}:${port}`);
+        console.log(`🚀 Server is on ${domain}`);
     });
 } catch (error) {
     if (error instanceof Error) {

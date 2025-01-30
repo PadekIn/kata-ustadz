@@ -4,12 +4,11 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc copy",
-    "start": "pnpm build && SET NODE_ENV=Production && pnpm build && node dist/src/main.js",
+    "start": "SET NODE_ENV=Production && tsc copy && node dist/src/main.js",
     "dev": "ts-node-dev --respawn src/index.ts",
     "lint": "eslint .",
-    "test": "jest",
-    "copy": "ts-node ./script.js",
-    "tsc": "tsc"
+    "test": "jest --coverage",
+    "copy": "ts-node ./script.js"
   },
   "keywords": [],
   "author": "",

@@ -3,16 +3,18 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "npm-run-all clean tsc copy",
-    "start": "npm run build && SET NODE_ENV=Production && npm run build && node dist/src/main.js",
+    "build": "tsc copy",
+    "start": "pnpm build && SET NODE_ENV=Production && pnpm build && node dist/src/main.js",
     "dev": "ts-node-dev --respawn src/index.ts",
     "lint": "eslint .",
-    "test": "jest"
+    "test": "jest",
+    "copy": "ts-node ./script.js",
+    "tsc": "tsc"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
+  "type": "commonjs",
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.3.0",

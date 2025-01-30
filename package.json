@@ -7,7 +7,7 @@
     "start": "pnpm build && SET NODE_ENV=Production && pnpm build && node dist/src/main.js",
     "dev": "ts-node-dev --respawn src/index.ts",
     "lint": "eslint .",
-    "test": "jest",
+    "test": "jest --coverage",
     "copy": "ts-node ./script.js",
     "tsc": "tsc"
   },

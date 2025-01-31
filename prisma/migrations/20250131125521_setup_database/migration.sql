@@ -1,9 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-
-*/
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('Admin', 'User');
 
@@ -14,7 +8,7 @@ CREATE TYPE "Gender" AS ENUM ('male', 'female');
 CREATE TYPE "MessageType" AS ENUM ('Promosi', 'Notifikasi');
 
 -- CreateEnum
-CREATE TYPE "TypeContent" AS ENUM ('Artikel', 'Video', 'PDF');
+CREATE TYPE "TypeContent" AS ENUM ('Audio', 'Video', 'Pdf');
 
 -- CreateEnum
 CREATE TYPE "TypeWatchLater" AS ENUM ('Content', 'Module');
@@ -24,9 +18,6 @@ CREATE TYPE "TypeOrder" AS ENUM ('Content', 'package');
 
 -- CreateEnum
 CREATE TYPE "OrderStatus" AS ENUM ('Issued', 'Unpaid', 'Cancelled', 'Expired');
-
--- DropTable
-DROP TABLE "User";
 
 -- CreateTable
 CREATE TABLE "notifications" (
@@ -88,7 +79,7 @@ CREATE TABLE "categories" (
 -- CreateTable
 CREATE TABLE "contents" (
     "id" SERIAL NOT NULL,
-    "typeId" "TypeContent" NOT NULL,
+    "type" "TypeContent" NOT NULL DEFAULT 'Video',
     "image" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,

@@ -1,10 +1,10 @@
 {
   "name": "kata-ustadz",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "build": "tsc copy",
-    "start": "SET NODE_ENV=Production && tsc copy && node dist/src/main.js",
+    "start": "SET NODE_ENV=Production && tsc copy && node dist/src/index.js",
     "dev": "ts-node-dev --respawn src/index.ts",
     "lint": "eslint .",
     "test": "jest --coverage",
@@ -17,6 +17,7 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.3.0",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -29,8 +30,10 @@
     "@babel/preset-env": "^7.26.7",
     "@babel/preset-typescript": "^7.26.0",
     "@jest/globals": "^29.7.0",
+    "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
+    "@types/express-list-endpoints": "^6.0.3",
     "@types/jest": "^29.5.14",
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.12.0",

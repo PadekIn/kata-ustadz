@@ -8,7 +8,8 @@
     "dev": "ts-node-dev --respawn src/index.ts",
     "lint": "eslint .",
     "test": "jest --coverage",
-    "copy": "ts-node ./script.js"
+    "copy": "ts-node ./script.js",
+    "seed": "ts-node ./prisma/seeder/main.ts"
   },
   "keywords": [],
   "author": "",
@@ -45,7 +46,8 @@
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "xlsx": "^0.18.5"
   },
   "jest": {
     "transform": {

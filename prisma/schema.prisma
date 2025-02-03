@@ -72,7 +72,7 @@ model Account {
   createdAt                DateTime  @default(now()) @map("created_at")
   updatedAt                DateTime  @updatedAt @map("updated_at")
 
-  user         User?
+  User         User?
   Notification Notification[]
 
   @@map("accounts")
@@ -92,14 +92,14 @@ model User {
   Account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
   Content Content[]
-  ListContent ListContent[]
+  ContentCategory ContentCategory[]
   Module Module[]
   ListModule ListModule[]
   Comment Comment[]
   Like Like[]
   History History[]
   WatchLater WatchLater[]
-  purchasedContent purchasedContent[]
+  PurchasedContent PurchasedContent[]
   Order Order[]
 
   @@map("users")
@@ -113,7 +113,7 @@ model Category {
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
 
-  ListContent ListContent[]
+  ContentCategory ContentCategory[]
 
   @@map("categories")
 }
@@ -134,19 +134,19 @@ model Content {
 
   User User @relation(fields: [createBy], references: [id], onDelete: Cascade)
 
-  ListContent ListContent[]
+  ContentCategory ContentCategory[]
   ListModule ListModule[]
   Comment Comment[]
   Like Like[]
   History History[]
   WatchLater WatchLater[]
-  purchasedContent purchasedContent[]
+  PurchasedContent PurchasedContent[]
   Order Order[]
 
   @@map("contents")
 }
 
-model ListContent {
+model ContentCategory {
   contentId  Int @map("id_content")
   categoryId Int @map("id_category")
   createBy   Int @map("create_by")
@@ -254,7 +254,7 @@ model WatchLater {
   @@map("watch_laters")
 }
 
-model purchasedContent {
+model PurchasedContent {
   id          Int      @id @default(autoincrement())
   userId      Int      @map("id_user")
   contentId   Int      @map("id_content")

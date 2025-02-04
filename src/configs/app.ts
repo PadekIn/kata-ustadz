@@ -1,7 +1,7 @@
 import express, { json, urlencoded } from "express";
 import morgan from "morgan";
 import cors from "cors";
-// import apiV1 from '../routes/api/v1/index.js';
+import apiV1 from "../modules/index";
 import * as ErrorHandler from "../middlewares/errorHandler";
 
 export const app = express();
@@ -17,8 +17,7 @@ app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(morgan("dev"));
 
-
-// apiV1(app);
+apiV1(app);
 
 app.use(ErrorHandler.handleNotFound);
 app.use(ErrorHandler.handleOther);

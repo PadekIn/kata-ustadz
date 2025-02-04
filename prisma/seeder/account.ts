@@ -40,7 +40,7 @@ async function createAccount(prisma: any, item: AccountData): Promise<void> {
                         phoneNumber: item.phoneNumber,
                         gender: item.gender
                     }
-                }
+                },
             },
         });
         console.log(`✅ Data ${item.fullName} berhasil ditambahkan.`);

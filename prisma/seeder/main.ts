@@ -1,11 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 import account from "./account";
+import content from "./content";
 
 const prisma = new PrismaClient();
 
 async function main(): Promise<void> {
     try {
         await account(prisma);
+        await content(prisma);
 
         console.log("🎉 Semua seeder berhasil dijalankan!");
     } catch (error) {

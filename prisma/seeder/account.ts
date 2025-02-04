@@ -34,7 +34,7 @@ async function createAccount(prisma: any, item: AccountData): Promise<void> {
                 role: item.role,
                 isActive: item.isActive,
                 isVerified: item.isVerified,
-                user: {
+                User: {
                     create: {
                         fullName: item.fullName,
                         phoneNumber: item.phoneNumber,

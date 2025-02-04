@@ -28,3 +28,34 @@ export const getContents = async (query: QueryPagination) => {
         },
     };
 };
+
+export const getBunnyContents = async () => {
+    const BUNNY_API_KEY = process.env.BUNNY_API_KEY;
+    const BUNNY_LIBRARY_ID = process.env.BUNNY_LIBRARY_ID;
+    
+    if (!BUNNY_API_KEY) {
+        throw new Error("BUNNY_API_KEY is not defined");
+    }
+
+    const url = `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos`;
+    const options = {
+        method: "GET",
+        headers: {
+            accept: "application/json",
+            AccessKey: BUNNY_API_KEY
+        }
+    };
+    
+    try {
+        const response = await fetch(url, options);
+        const data = await response.json();
+        return data;
+    } catch (err) {
+        console.error(err);
+        throw new Error("Failed to fetch Bunny contents");
+    }
+};
+
+export const storeContent = async (data: Content.Content) => {
+    console.log(data);
+};

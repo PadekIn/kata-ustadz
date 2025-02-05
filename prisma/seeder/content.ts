@@ -2,10 +2,9 @@ import * as xlsx from "xlsx";
 
 interface ContentData {
     type: "Video" | "Audio"
-    image: string,
-    title: string,
-    description: string,
-    link: string,
+    ustadzName: string,
+    bunnyId: number,
+    url: string,
     price: number,
     createBy: number,
     isActive: boolean,
@@ -30,17 +29,16 @@ async function createContent(prisma: any, item: ContentData): Promise<void> {
         await prisma.content.create({
             data: {
                 type: item.type,
-                image: item.image,
-                title: item.title,
-                description: item.description,
-                link: item.link,
+                ustadzName: item.ustadzName,
+                bunnyId: item.bunnyId,
+                url: item.url,
                 price: item.price,
                 createBy: item.createBy,
                 isActive: item.isActive,
             },
         });
-        console.log(`✅ Data ${item.title} berhasil ditambahkan.`);
+        console.log(`✅ Data content ${item.ustadzName} berhasil ditambahkan.`);
     } catch (error) {
-        console.error(`❌ Gagal menambahkan ${item.title}: ${(error as Error).message}`);
+        console.error(`❌ Gagal menambahkan content ${item.ustadzName}: ${(error as Error).message}`);
     }
 }

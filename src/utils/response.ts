@@ -19,13 +19,3 @@ export const res201 = (message: string, data: any, res: Response): void => {
         data,
     });
 };
-
-export const res404 = (message: string, res: Response): void => {
-    res.status(404).json({
-        status: {
-            code: 404,
-            message,
-        },
-        data: null,
-    });
-};

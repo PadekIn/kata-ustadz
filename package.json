@@ -9,7 +9,10 @@
     "lint": "eslint .",
     "test": "jest --coverage",
     "copy": "ts-node ./script.js",
-    "seed": "ts-node ./prisma/seeder/main.ts"
+    "db:seed": "ts-node ./prisma/seeder/main.ts",
+    "db:reset": "npx prisma db push --force-reset",
+    "db:migrate": "npx prisma migrate dev",
+    "db:generate": "npx prisma generate"
   },
   "keywords": [],
   "author": "",

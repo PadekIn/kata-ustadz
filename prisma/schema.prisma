@@ -100,7 +100,7 @@ model Affiliate {
   totalEarning Float  @default(0) @map("total_earning")
   totalPayout  Float  @default(0) @map("total_payout")
 
-  User       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User       User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
   Commission Commission[]
   Order      Order[]
 
@@ -124,8 +124,8 @@ model Content {
   id         Int         @id @default(autoincrement())
   type       ContentType @default(Video)
   ustadzName String      @map("ustadz_name")
-  bunnyId    String      @map("bunny_id")
-  url        String
+  bunnyId    String      @unique @map("bunny_id")
+  url        String      @unique
   price      Int
   isActive   Boolean     @default(true) @map("is_active")
   createBy   Int         @map("create_by")

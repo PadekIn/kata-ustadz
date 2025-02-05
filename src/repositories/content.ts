@@ -3,10 +3,9 @@ import prisma from "../configs/prisma";
 export type Content = {
     id: number;
     type: string;
-    image: string;
-    title: string;
-    description: string;
-    link: string;
+    ustadzName: string,
+    bunnyId: string;
+    url: string;
     price: number;
     createBy: number;
     isActive: boolean;

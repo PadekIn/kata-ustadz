@@ -1,31 +1,28 @@
-import { Response, NextFunction } from "express";
-import * as response from "../utils/response";
+import { Request, Response, NextFunction } from "express";
 
-export const handleNotFound = (res: Response): void => {
-  response.res404("Resource not found!", res);
+interface ExtendedError extends Error {
+  code?: number;
+  errors?: { message: string }[];
+}
+
+export const errorHandler = (err: ExtendedError, req: Request, res: Response, next: NextFunction) => {
+  if (!err) next();
+
+  const statusCode = err.code || 500;
+  const message = statusCode === 500 ? "Internal server error" : err.message;
+  const errors = err.errors || [];
+
+  if (process.env.NODE_ENV === "development" && statusCode === 500) console.log(err);
+
+  res.status(statusCode).json({
+      status: false,
+      message,
+      errors
+  });
 };
 
-export const handleOther = (
-  err: any,
-  res: Response,
-  next: NextFunction
-): void => {
-  if (!err) {
-    return next();
-  }
-
-  const statusCode: number = err.statusCode || 500;
-  res.status(statusCode);
-
-  if (process.env.NODE_ENV === "development" || statusCode === 500) {
-    console.log(err.message);
-  }
-
-  const message: string = statusCode === 500 ? "Internal Server Error" : err.message;
-
-  res.json({
-    status: err.status || false,
-    message,
-    data: err.data || null,
-  });
+export const resourceNotFound = (req: Request, res: Response, next: NextFunction) => {
+  const error: ExtendedError = new Error("Resource not found");
+  error.code = 404;
+  next(error);
 };

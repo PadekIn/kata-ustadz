@@ -1,13 +1,12 @@
 import * as xlsx from "xlsx";
 
 interface AccountData {
-    fullName: string;
-    phoneNumber: string;
-    gender: "male" | "female";
+    fullname: string;
+    phone: string;
+    gender: "Male" | "Female";
     email: string;
     password: string;
     role: "Admin" | "User";
-    isActive: boolean;
     isVerified: boolean;
 }
 
@@ -32,19 +31,18 @@ async function createAccount(prisma: any, item: AccountData): Promise<void> {
                 email: item.email,
                 password: item.password,
                 role: item.role,
-                isActive: item.isActive,
                 isVerified: item.isVerified,
                 User: {
                     create: {
-                        fullName: item.fullName,
-                        phoneNumber: item.phoneNumber,
+                        fullname: item.fullname,
+                        phone: item.phone,
                         gender: item.gender
                     }
                 },
             },
         });
-        console.log(`✅ Data ${item.fullName} berhasil ditambahkan.`);
+        console.log(`✅ Data ${item.fullname} berhasil ditambahkan.`);
     } catch (error) {
-        console.error(`❌ Gagal menambahkan ${item.email}: ${(error as Error).message}`);
+        console.error(`❌ Gagal menambahkan ${item.fullname}: ${(error as Error).message}`);
     }
 }

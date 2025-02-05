@@ -3,7 +3,6 @@ import * as xlsx from "xlsx";
 interface ContentCategoryData {
     contentId: number,
     categoryId: number,
-    createBy: number,
 }
 
 export default async function contentCategory(prisma: any): Promise<void> {
@@ -26,7 +25,6 @@ async function createContentCategory(prisma: any, item: ContentCategoryData): Pr
             data: {
                 contentId: item.contentId,
                 categoryId: item.categoryId,
-                createBy: item.createBy,
             },
         });
         console.log("✅ Data contentcategory berhasil ditambahkan.");

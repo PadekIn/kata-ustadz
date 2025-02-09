@@ -61,8 +61,10 @@ model Account {
   isVerified    Boolean   @default(false) @map("is_verified")
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
 
   User         User?
+  WaitingList  WaitingList?
   Notification Notification[]
 
   @@map("accounts")
@@ -72,8 +74,12 @@ model User {
   id                Int       @id @default(autoincrement())
   accountId         Int       @unique @map("account_id")
   fullname          String    @map("fullname")
-  phone             String?   @unique @map("phone")
+  phone             String    @unique @map("phone")
   gender            Gender
+  birthdate         DateTime  @map("birthdate")
+  city              String
+  job               String
+  picture           String?
   subscriptionUntil DateTime? @map("subscription_until")
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")
@@ -93,6 +99,17 @@ model User {
   @@map("users")
 }
 
+model WaitingList {
+  id        Int      @id @default(autoincrement())
+  accountId Int      @map("account_id") @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  Account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@map("waiting_lists")
+}
+
 model Affiliate {
   id           Int    @id @default(autoincrement())
   userId       Int    @unique @map("user_id")
@@ -100,7 +117,7 @@ model Affiliate {
   totalEarning Float  @default(0) @map("total_earning")
   totalPayout  Float  @default(0) @map("total_payout")
 
-  User       User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User       User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
   Commission Commission[]
   Order      Order[]
 

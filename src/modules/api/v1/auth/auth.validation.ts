@@ -27,7 +27,7 @@ const phoneSchema = z.string()
 
 const passwordSchema = z.string().min(6, { message: "Password minimal 6 karakter." });
 
-export const registerSchema = z.object({
+export const register = z.object({
     email: emailSchema,
     fullname: fullnameSchema,
     gender: genderSchema,
@@ -41,11 +41,19 @@ export const registerSchema = z.object({
     path: ["confirmPassword"]
 });
 
-export const loginSchema = z.object({
+export const login = z.object({
     email: emailSchema,
     password: passwordSchema
 });
 
-export const forgotPasswordSchema = z.object({
+export const forgotPassword = z.object({
     email: emailSchema
+});
+
+export const resetPassword = z.object({
+    password: passwordSchema,
+    confirmPassword: passwordSchema
+}).refine(data => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"]
 });

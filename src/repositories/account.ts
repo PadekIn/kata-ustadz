@@ -57,3 +57,14 @@ export const verifyAccount = async (id: number) => {
         },
     });
 };
+
+export const updatePassword = async (id: number, password: string) => {
+    return await prisma.account.update({
+        where: {
+            id,
+        },
+        data: {
+            password,
+        },
+    });
+};

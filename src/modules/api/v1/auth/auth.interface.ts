@@ -8,3 +8,8 @@ export interface RegisterData {
     password: string;
     confirmPassword: string;
 };
+
+export interface resetPasswordData {
+    password: string;
+    confirmPassword: string;
+};

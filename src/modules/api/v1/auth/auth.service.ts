@@ -1,6 +1,6 @@
 import * as bcrypt from "bcrypt";
 import * as Account from "../../../../repositories/account";
-import { RegisterData } from "./auth.interface";
+import { RegisterData, resetPasswordData } from "./auth.interface";
 import { hashid, unhashid } from "../../../../utils/hashid";
 import sendMail from "../../../../utils/sendMail";
 import customError from "../../../../utils/customError";
@@ -68,10 +68,24 @@ export const forgotPassword = async (data: { email: string }) => {
     if (!account) throw customError(404, "Account not found");
 
     const hashId = hashid(account.id);
-    const url = process.env.BASE_URL + "/api/v1/auth/reset-password/" + hashId;
+    const url = process.env.FE_URL + "/reset-password/" + hashId;
     const mailData = {
         url
     };
 
     await sendMail(data.email, "Reset Password", "forgot-password", mailData);
+};
+
+export const resetPassword = async (hashId: string, data: resetPasswordData) => {
+    const id = Number(unhashid(hashId)[0]);
+
+    if (!id) throw new Error("Invalid hashId");
+
+    const account = await Account.getAccountById(id);
+
+    if (!account) throw customError(404, "Account not found");
+
+    data.password = await bcrypt.hash(data.password, 10);
+
+    await Account.updatePassword(id, data.password);
 };

@@ -3,8 +3,8 @@ import { transporter } from "../configs/nodemailer";
 import path from "path";
 
 interface dataType {
-    fullname: string;
-    url: string;
+    fullname?: string;
+    url?: string;
 };
 
 export default async (emailFor: string, subject: string, mailFormat: string, data: dataType | string = "") => {

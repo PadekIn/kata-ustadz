@@ -31,3 +31,13 @@ export const loginAccount = async (req: Request, res: Response, next: NextFuncti
         next(error);
     }
 };
+
+export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const account = await AuthService.forgotPassword(req.body);
+
+        response.res200("Success forgot password", account, res);
+    } catch (error) {
+        next(error);
+    }
+};

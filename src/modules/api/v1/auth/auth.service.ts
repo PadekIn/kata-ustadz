@@ -61,3 +61,17 @@ export const login = async (data: { email: string, password: string }) => {
 
     return { account: account.email, token };
 };
+
+export const forgotPassword = async (data: { email: string }) => {
+    const account = await Account.getAccountByEmail(data.email);
+
+    if (!account) throw customError(404, "Account not found");
+
+    const hashId = hashid(account.id);
+    const url = process.env.BASE_URL + "/api/v1/auth/reset-password/" + hashId;
+    const mailData = {
+        url
+    };
+
+    await sendMail(data.email, "Reset Password", "forgot-password", mailData);
+};

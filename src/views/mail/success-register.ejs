@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .header {
+            background-color: #003366;
+            color: #ffcc00;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+        }
+        .footer {
+            background-color: #003366;
+            color: #ffcc00;
+            padding: 10px;
+            text-align: center;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 20px 0;
+            background-color: #ffcc00;
+            color: #003366;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Kata Ustadz</h1>
+        </div>
+        <div class="content">
+            <p>Hi <%= data?.fullname %>,</p>
+            <p>Terima kasih telah mendaftar di Kata Ustadz. Kami senang Anda bergabung dengan kami.</p>
+            <p>Silakan klik tombol di bawah ini untuk mengkonfirmasi pendaftaran Anda:</p>
+            <a href="<%= data?.url %>" class="button">Konfirmasi Pendaftaran</a>
+            <p>Jika Anda memiliki pertanyaan, jangan ragu untuk menghubungi kami melalui email di official@kataustadz.com.</p>
+            <p>Salam hangat,</p>
+            <p>Tim Kata Ustadz</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2025 Kata Ustadz. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

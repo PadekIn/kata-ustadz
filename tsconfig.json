@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "ES6",
+        "target": "ESNext",
         "module": "CommonJS",
         "outDir": "./dist",
         "rootDir": "./src",
@@ -8,5 +8,5 @@
         "esModuleInterop": true
     },
     "exclude": ["prisma", "node_modules"],
-    "include": ["src/**/*"]
+    "include": ["src", "src/views"]
 }

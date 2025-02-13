@@ -5,7 +5,7 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  // directUrl = env("DIRECT_URL")
 }
 
 enum MessageType {
@@ -78,7 +78,7 @@ model User {
   gender            Gender
   birthdate         DateTime  @map("birthdate")
   city              String
-  job               String
+  job               String?
   picture           String?
   subscriptionUntil DateTime? @map("subscription_until")
   createdAt         DateTime  @default(now()) @map("created_at")

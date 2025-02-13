@@ -35,6 +35,8 @@ export const createAccount = async (data: RegisterData) => {
                     fullname: data.fullname,
                     phone: data.phone,
                     gender: data.gender,
+                    birthdate: data.birthDate,
+                    city: data.city,
                 }
             }
         },

@@ -11,3 +11,13 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         next(error);
     }
 };
+
+export const verifyAccount = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const account = await AuthService.verify(req.params.hashId);
+
+        response.res200("Success verify account", account, res);
+    } catch (error) {
+        next(error);
+    }
+};

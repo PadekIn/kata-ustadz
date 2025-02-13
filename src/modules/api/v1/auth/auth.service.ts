@@ -3,7 +3,7 @@ import * as Account from "../../../../repositories/account";
 import { RegisterData, resetPasswordData } from "./auth.interface";
 import { hashid, unhashid } from "../../../../utils/hashid";
 import sendMail from "../../../../utils/sendMail";
-import customError from "../../../../utils/customError";
+import customError from "../../../../utils/appError";
 import jwt from "jsonwebtoken";
 
 export const register = async (data: RegisterData) => {

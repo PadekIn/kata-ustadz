@@ -1,7 +1,8 @@
 type Errors = {
     message: string;
 }[]
-class CustomError extends Error {
+
+export class AppError extends Error {
     code: number;
     errors: Errors;
     constructor(code: number, message: string, errors: Errors = []) {
@@ -12,5 +13,5 @@ class CustomError extends Error {
 }
 
 export default (code: number, message: string, errors: Errors = []) => {
-    return new CustomError(code, message, errors);
+    return new AppError(code, message, errors);
 };

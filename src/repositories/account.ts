@@ -5,33 +5,24 @@ export type Account = {
     id: number;
     email: string;
     password: string;
-    isVerified: boolean;
     createdAt: Date;
     updatedAt: Date;
 };
 
-const excludePassword = (account: Account) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...accountWithoutPassword } = account;
-    return accountWithoutPassword;
-};
-
 export const getAccountById = async (id: number) => {
-    const account = await prisma.account.findUnique({
+    return await prisma.account.findUnique({
         where: {
             id,
         }
     });
-    return account ? excludePassword(account) : null;
 };
 
 export const getAccountByEmail = async (email: string) => {
-    const account = await prisma.account.findUnique({
+    return await prisma.account.findUnique({
         where: {
             email,
         },
     });
-    return account ? excludePassword(account) : null;
 };
 
 export const createAccount = async (data: RegisterData) => {
@@ -51,11 +42,13 @@ export const createAccount = async (data: RegisterData) => {
         },
     });
 
-    return excludePassword(account);
+    account.password = "*****";
+
+    return account;
 };
 
 export const verifyAccount = async (id: number) => {
-    const account = await prisma.account.update({
+    return await prisma.account.update({
         where: {
             id,
         },
@@ -63,5 +56,4 @@ export const verifyAccount = async (id: number) => {
             isVerified: true,
         },
     });
-    return excludePassword(account);
 };

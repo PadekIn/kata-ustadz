@@ -4,6 +4,7 @@ import { RegisterData } from "./auth.interface";
 import { hashid, unhashid } from "../../../../utils/hashid";
 import sendMail from "../../../../utils/sendMail";
 import customError from "../../../../utils/customError";
+import jwt from "jsonwebtoken";
 
 export const register = async (data: RegisterData) => {
     const account = await Account.getAccountByEmail(data.email);
@@ -38,4 +39,25 @@ export const verify = async (hashId: string) => {
 
     await Account.verifyAccount(id);
 
+};
+
+export const login = async (data: { email: string, password: string }) => {
+    const account = await Account.getAccountByEmail(data.email);
+
+    if (!account) throw customError(404, "Account not found");
+
+    const isPasswordMatch = await bcrypt.compare(data.password, account.password);
+
+    if (!isPasswordMatch) throw customError(400, "Invalid password");
+
+    const secret = process.env.JWT_SECRET || "secretkey";
+    const payload = {
+        id: account.id
+    };
+    const jwtOptions = {
+        expiresIn: 3600 * 24, // 1 day 3600s * 24
+    };
+    const token = jwt.sign(payload, secret, jwtOptions);
+
+    return { account: account.email, token };
 };

@@ -21,3 +21,13 @@ export const verifyAccount = async (req: Request, res: Response, next: NextFunct
         next(error);
     }
 };
+
+export const loginAccount = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const account = await AuthService.login(req.body);
+
+        response.res200("Success login", account, res);
+    } catch (error) {
+        next(error);
+    }
+};

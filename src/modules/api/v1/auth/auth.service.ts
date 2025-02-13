@@ -59,7 +59,12 @@ export const login = async (data: { email: string, password: string }) => {
     };
     const token = jwt.sign(payload, secret, jwtOptions);
 
-    return { account: account.email, token };
+    const accountData = {
+        email: account.email,
+        role: account.role,
+    };
+
+    return { account: accountData, token };
 };
 
 export const forgotPassword = async (data: { email: string }) => {

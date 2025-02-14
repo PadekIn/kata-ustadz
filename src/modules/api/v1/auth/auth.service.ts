@@ -3,7 +3,7 @@ import * as Account from "../../../../repositories/account";
 import { RegisterData, resetPasswordData } from "./auth.interface";
 import { hashid, unhashid } from "../../../../utils/hashid";
 import sendMail from "../../../../utils/sendMail";
-import customError from "../../../../utils/appError";
+import appError from "../../../../utils/appError";
 import jwt from "jsonwebtoken";
 
 export const register = async (data: RegisterData) => {
@@ -33,9 +33,9 @@ export const verify = async (hashId: string) => {
 
     const account = await Account.getAccountById(id);
 
-    if (!account) throw customError(404, "Account not found");
+    if (!account) throw appError(404, "Account not found");
 
-    if (account.isVerified) throw customError(400, "Account already verified");
+    if (account.isVerified) throw appError(400, "Account already verified");
 
     await Account.verifyAccount(id);
 
@@ -44,11 +44,11 @@ export const verify = async (hashId: string) => {
 export const login = async (data: { email: string, password: string }) => {
     const account = await Account.getAccountByEmail(data.email);
 
-    if (!account) throw customError(404, "Account not found");
+    if (!account) throw appError(404, "Account not found");
 
     const isPasswordMatch = await bcrypt.compare(data.password, account.password);
 
-    if (!isPasswordMatch) throw customError(400, "Invalid password");
+    if (!isPasswordMatch) throw appError(400, "Invalid password");
 
     const secret = process.env.JWT_SECRET || "secretkey";
     const payload = {
@@ -70,7 +70,7 @@ export const login = async (data: { email: string, password: string }) => {
 export const forgotPassword = async (data: { email: string }) => {
     const account = await Account.getAccountByEmail(data.email);
 
-    if (!account) throw customError(404, "Account not found");
+    if (!account) throw appError(404, "Account not found");
 
     const hashId = hashid(account.id);
     const url = process.env.FE_URL + "/reset-password/" + hashId;
@@ -88,7 +88,7 @@ export const resetPassword = async (hashId: string, data: resetPasswordData) => 
 
     const account = await Account.getAccountById(id);
 
-    if (!account) throw customError(404, "Account not found");
+    if (!account) throw appError(404, "Account not found");
 
     data.password = await bcrypt.hash(data.password, 10);
 

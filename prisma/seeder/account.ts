@@ -1,13 +1,15 @@
 import * as xlsx from "xlsx";
 
 interface AccountData {
-    fullname: string;
-    phone: string;
-    gender: "Male" | "Female";
-    email: string;
-    password: string;
-    role: "Admin" | "User";
-    isVerified: boolean;
+    fullname: string,
+    phone: string,
+    gender: "Male" | "Female",
+    birthdate: Date,
+    city: string,
+    email: string,
+    password: string,
+    role: "Admin" | "User",
+    isVerified: boolean,
 }
 
 export default async function account(prisma: any): Promise<void> {
@@ -36,7 +38,9 @@ async function createAccount(prisma: any, item: AccountData): Promise<void> {
                     create: {
                         fullname: item.fullname,
                         phone: item.phone,
-                        gender: item.gender
+                        gender: item.gender,
+                        birthdate: new Date(item.birthdate),
+                        city: item.city,
                     }
                 },
             },

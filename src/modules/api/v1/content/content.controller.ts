@@ -11,7 +11,7 @@ export const getAllContent = async (req: Request, res: Response, next: NextFunct
 
         const contents = await ContentService.getContents(query);
 
-        CustomResponse.res200("Success get all content", contents, res);
+        CustomResponse.res200(res, "Success get all content", contents);
     } catch (error) {
         next(error);
     }
@@ -21,7 +21,7 @@ export const getBunnyContent = async (req: Request, res: Response, next: NextFun
     try {
         const contents = await ContentService.getBunnyContents();
 
-        CustomResponse.res200("Success get all content", contents, res);
+        CustomResponse.res200(res, "Success get all content", contents);
     } catch (error) {
         next(error);
     }

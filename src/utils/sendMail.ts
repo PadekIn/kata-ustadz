@@ -25,7 +25,7 @@ export default async (emailFor: string, subject: string, mailFormat: string, dat
         html: emailContent,
     };
 
-    transporter.sendMail(mailOption);
+    await transporter.sendMail(mailOption);
 
     return true;
 };

@@ -1,5 +1,5 @@
 import * as xlsx from "xlsx";
-
+import bcrypt from "bcrypt";
 interface AccountData {
     fullname: string,
     phone: string,
@@ -28,6 +28,7 @@ export default async function account(prisma: any): Promise<void> {
 
 async function createAccount(prisma: any, item: AccountData): Promise<void> {
     try {
+        item.password = await bcrypt.hash(item.password, 10);
         await prisma.account.create({
             data: {
                 email: item.email,

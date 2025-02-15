@@ -1,53 +1,44 @@
+import { FastifyReply, FastifyRequest } from "fastify";
 import * as AuthService from "./auth.service";
-import { Request, Response, NextFunction } from "express";
-import * as response from "../../../../utils/response";
+import { ForgotPasswordData, LoginData, ParamsIdRequest, RegisterData, ResetPasswordData } from "./auth.interface";
+import response from "../../../../utils/response";
 
-export const register = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const account = await AuthService.register(req.body);
-
-        response.res201(res, "Success register account", account);
-    } catch (error) {
-        next(error);
-    }
+export const register = async (
+  request: FastifyRequest,
+  reply: FastifyReply,
+): Promise<void> => {
+  await AuthService.register(request.body as RegisterData);
+  return response(reply, 201, "User registered successfully");
 };
 
-export const verifyAccount = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const account = await AuthService.verify(req.params.hashId);
-
-        response.res200(res, "Success verify account", account);
-    } catch (error) {
-        next(error);
-    }
+export const verify = async (
+  request: FastifyRequest<{ Params: { id: string } }>,
+  reply: FastifyReply,
+): Promise<void> => {
+  await AuthService.verify(request.params.id);
+  return response(reply, 200, "User verified successfully");
 };
 
-export const loginAccount = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const account = await AuthService.login(req.body);
-
-        response.res200(res, "Success login", account);
-    } catch (error) {
-        next(error);
-    }
+export const login = async (
+  request: FastifyRequest,
+  reply: FastifyReply,
+): Promise<void> => {
+  const data = await AuthService.login(request.body as LoginData, request.server);
+  return response(reply, 200, "Login success", data);
 };
 
-export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const account = await AuthService.forgotPassword(req.body);
-
-        response.res200(res, "Success forgot password", account);
-    } catch (error) {
-        next(error);
-    }
+export const forgotPassword = async (
+  request: FastifyRequest,
+  reply: FastifyReply,
+): Promise<void> => {
+  await AuthService.forgotPassword(request.body as ForgotPasswordData);
+  return response(reply, 200, "Forgot password success");
 };
 
-export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const account = await AuthService.resetPassword(req.params.hashId, req.body);
-
-        response.res200(res, "Success reset password", account);
-    } catch (error) {
-        next(error);
-    }
+export const resetPassword = async (
+  request: FastifyRequest<ParamsIdRequest>,
+  reply: FastifyReply,
+): Promise<void> => {
+  await AuthService.resetPassword(request.params.id, request.body as ResetPasswordData);
+  return response(reply, 200, "Reset password success");
 };

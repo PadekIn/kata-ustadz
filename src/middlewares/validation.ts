@@ -1,20 +1,23 @@
-import { Request, Response, NextFunction } from "express";
+import { FastifyRequest } from "fastify";
 import { ZodSchema, ZodError } from "zod";
-import err from "../utils/appError";
+import appError from "../utils/appError";
 
 export function validateData(schema: ZodSchema<any>) {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return async (req: FastifyRequest) => {
     try {
       schema.parse(req.body);
-      next();
     } catch (error) {
       if (error instanceof ZodError) {
-      const detailError = error.errors.map((issue: any) => ({
-            message: `${issue.path.join(".")} is ${issue.message}`,
+        const detailError = error.errors.map((issue: any) => ({
+          message: `${issue.path.join(".")} is ${issue.message}`,
         }));
-        next(err(400, "Invalid Request", detailError));
+        if(detailError.length > 1) {
+          throw appError(400, "Invalid Request", detailError);
+        } else {
+          throw appError(400, detailError[0].message);
+        }
       } else {
-        next(error);
+        throw appError(400, "Invalid Request");
       }
     }
   };

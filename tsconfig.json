@@ -1,12 +1,15 @@
 {
     "compilerOptions": {
-        "target": "ESNext",
-        "module": "CommonJS",
-        "outDir": "./dist",
-        "rootDir": "./src",
-        "strict": true,
-        "esModuleInterop": true
+      "target": "ES2022",
+      "module": "CommonJS",
+      "outDir": "dist",
+      "rootDir": "src",
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true
     },
-    "exclude": ["prisma", "node_modules"],
-    "include": ["src", "src/views"]
-}
+    "include": ["src"],
+    "exclude": ["node_modules", "dist"]
+  }
+  

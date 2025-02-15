@@ -1,17 +1,20 @@
-type Errors = {
-    message: string;
-}[]
+import { FastifyError } from "fastify";
 
-export class AppError extends Error {
-    code: number;
-    errors: Errors;
-    constructor(code: number, message: string, errors: Errors = []) {
-        super(message);
-        this.code = code;
-        this.errors = errors;
-    }
-}
+type Errors = { message: string }[];
 
-export default (code: number, message: string, errors: Errors = []) => {
-    return new AppError(code, message, errors);
+export class AppError extends Error implements FastifyError {
+  code: string;
+  statusCode: number;
+  errors?: Errors;
+
+  constructor(statusCode: number, message: string, errors: Errors = []) {
+    super(message);
+    this.statusCode = statusCode; // Fastify membutuhkan statusCode
+    this.errors = errors;
+    this.code = statusCode.toString();
+  }
+};
+
+export default (code: number, message: string, errors?: Errors): AppError => {
+  return new AppError(code, message, errors);
 };

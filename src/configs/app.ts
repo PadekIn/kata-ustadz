@@ -1,23 +1,30 @@
-import express, { json, urlencoded } from "express";
-import morgan from "morgan";
-import cors from "cors";
-import apiV1 from "../modules/index";
-import * as Err from "../middlewares/errorHandler";
+import fastify, { FastifyInstance } from "fastify";
+import cors from "@fastify/cors";
+import helmet from "@fastify/helmet";
+import jwt from "@fastify/jwt";
+import sensible from "@fastify/sensible";
+import env from "./env";
+import loggerConfig from "./logger";
+import corsConfig from "./cors";
+import helmetConfig from "./helmet";
+import apiV1 from "../modules/api/v1";
+import { errorHandler, notFoundHandler } from "../utils/errorHandler";
+import { authenticate } from "../middlewares/auth";
 
-export const app = express();
+const app: FastifyInstance = fastify({ logger: loggerConfig });
 
-const corsOptions = {
-    // origin: ['http://localhost:5173'],
-    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-};
+// Register Plugins
+app.register(cors, corsConfig);
+app.register(helmet, helmetConfig);
+app.register(jwt, { secret: env.JWT_SECRET });
+app.register(sensible);
+app.decorate("authenticate", authenticate);
 
-app.use(cors(corsOptions));
-app.use(json());
-app.use(urlencoded({ extended: false }));
-app.use(morgan("dev"));
+// Routes
+app.register(apiV1, { prefix: "/api/v1" });
 
-apiV1(app);
+// Error Handling
+app.setNotFoundHandler(notFoundHandler);
+app.setErrorHandler(errorHandler);
 
-app.use(Err.resourceNotFound);
-app.use(Err.errorHandler);
+export default app;

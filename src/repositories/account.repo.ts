@@ -1,4 +1,4 @@
-import prisma from "../configs/prisma";
+import prisma from "../configs/database";
 import { RegisterData } from "../modules/api/v1/auth/auth.interface";
 
 export type Account = {

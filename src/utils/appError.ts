@@ -9,7 +9,7 @@ export class AppError extends Error implements FastifyError {
 
   constructor(statusCode: number, message: string, errors: Errors = []) {
     super(message);
-    this.statusCode = statusCode; // Fastify membutuhkan statusCode
+    this.statusCode = statusCode;
     this.errors = errors;
     this.code = statusCode.toString();
   }

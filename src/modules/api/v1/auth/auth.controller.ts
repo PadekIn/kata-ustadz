@@ -8,7 +8,7 @@ export const register = async (
   reply: FastifyReply,
 ): Promise<void> => {
   await AuthService.register(request.body as RegisterData);
-  return response(reply, 201, "User registered successfully");
+  return response(reply, 201, "Registrasi berhasil, silahkan cek email untuk verifikasi");
 };
 
 export const verify = async (
@@ -16,7 +16,7 @@ export const verify = async (
   reply: FastifyReply,
 ): Promise<void> => {
   await AuthService.verify(request.params.id);
-  return response(reply, 200, "User verified successfully");
+  return response(reply, 200, "Verifikasi berhasil");
 };
 
 export const login = async (
@@ -24,7 +24,7 @@ export const login = async (
   reply: FastifyReply,
 ): Promise<void> => {
   const data = await AuthService.login(request.body as LoginData, request.server);
-  return response(reply, 200, "Login success", data);
+  return response(reply, 200, "Login berhasil", data);
 };
 
 export const forgotPassword = async (
@@ -32,7 +32,7 @@ export const forgotPassword = async (
   reply: FastifyReply,
 ): Promise<void> => {
   await AuthService.forgotPassword(request.body as ForgotPasswordData);
-  return response(reply, 200, "Forgot password success");
+  return response(reply, 200, "Berhasil mengirim email reset password, silahkan cek email");
 };
 
 export const resetPassword = async (
@@ -40,5 +40,5 @@ export const resetPassword = async (
   reply: FastifyReply,
 ): Promise<void> => {
   await AuthService.resetPassword(request.params.id, request.body as ResetPasswordData);
-  return response(reply, 200, "Reset password success");
+  return response(reply, 200, "Berhasil memperbarui password");
 };

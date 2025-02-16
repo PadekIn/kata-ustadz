@@ -9,7 +9,7 @@ import { FastifyInstance } from "fastify";
 export const register = async (data: RegisterData) => {
   const account = await Account.getAccountByEmail(data.email);
 
-  if (account) throw appError(400, "Email already registered");
+  if (account) throw appError(400, "Bad Request", [{ message: "Email sudah terdaftar" }]);
 
   data.password = await bcrypt.hash(data.password, 10);
 
@@ -33,9 +33,9 @@ export const verify = async (hashId: string) => {
 
   const account = await Account.getAccountById(id);
 
-  if (!account) throw appError(404, "Account not found");
+  if (!account) throw appError(404, "Not Found", [{ message: "Akun tidak ditemukan" }]);
 
-  if (account.isVerified) throw appError(400, "Account already verified");
+  if (account.isVerified) throw appError(400, "Bad Request", [{ message: "Akun sudah diverifikasi" }]);
 
   await Account.verifyAccount(id);
 
@@ -44,9 +44,9 @@ export const verify = async (hashId: string) => {
 export const login = async (data: LoginData, app: FastifyInstance) => {
   const account = await Account.getAccountByEmail(data.email);
 
-  if (!account) throw appError(400, "Invalid email");
+  if (!account) throw appError(400, "Bad Request", [{ message: "Email tidak terdaftar" }]);
   const isPasswordMatch = await bcrypt.compare(data.password, account.password);
-  if (!isPasswordMatch) throw appError(400, "Invalid password");
+  if (!isPasswordMatch) throw appError(400, "Bad Request", [{ message: "Password salah" }]);
 
   const payload = {
     id: account.id
@@ -67,7 +67,7 @@ export const login = async (data: LoginData, app: FastifyInstance) => {
 export const forgotPassword = async (data: { email: string }) => {
   const account = await Account.getAccountByEmail(data.email);
 
-  if (!account) throw appError(400, "Invalid email");
+  if (!account) throw appError(400, "Bad Request", [{ message: "Email tidak terdaftar" }]);
 
   const hashId = hashid(account.id);
   const url = process.env.FE_URL + "/reset-password/" + hashId;
@@ -81,12 +81,11 @@ export const forgotPassword = async (data: { email: string }) => {
 export const resetPassword = async (hashId: string, data: ResetPasswordData) => {
   const id = Number(unhashid(hashId)[0]);
 
-  if (!id) throw appError(400, "Invalid hashId");
+  if (!id) throw appError(400, "Bad Request", [{ message: "Id Akun Tidak Valid" }]);
 
   const account = await Account.getAccountById(id);
 
-  if (!account) throw appError(404, "Account not found");
-
+  if (!account) throw appError(404, "Not Found", [{ message: "Akun tidak ditemukan" }]);
   data.password = await bcrypt.hash(data.password, 10);
 
   await Account.updatePassword(id, data.password);

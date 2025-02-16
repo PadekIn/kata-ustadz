@@ -6,18 +6,21 @@ import { AppError } from "../utils/appError";
 
 export function errorHandler(error: FastifyError, request: FastifyRequest, reply: FastifyReply) {
   let statusCode = Number(error.statusCode) ?? 500;
-  let message = statusCode === 500 ? "Internal Server Error" : error.message;
-  let errors: { message: string }[] = [];
+  let message = statusCode === 500 ? "Server Error" : error.message;
+  let errors: { message: string }[] = [
+    { message: error.message },
+  ];
 
   // Map error
   if (error instanceof AppError) {
     statusCode = Number(error.statusCode);
     message = error.message;
     errors = error.errors || [];
-  } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+  } else if (error instanceof Prisma.PrismaClientKnownRequestError || error instanceof Prisma.PrismaClientValidationError) {
     const prismaError = handlePrismaError(error);
     statusCode = prismaError.code;
     message = prismaError.message;
+    errors = prismaError.errors || [];
   }
 
   // Log error
@@ -48,7 +51,7 @@ export function errorHandler(error: FastifyError, request: FastifyRequest, reply
 
 export function notFoundHandler(request: FastifyRequest, reply: FastifyReply) {
   const statusCode = 404;
-  const message = "Route not found";
+  const message = "Url tidak ditemukan";
 
   // Log error hanya jika di development
   if (env.NODE_ENV === "development") {

@@ -9,15 +9,13 @@ export function validateData(schema: ZodSchema<any>) {
     } catch (error) {
       if (error instanceof ZodError) {
         const detailError = error.errors.map((issue: any) => ({
-          message: `${issue.path.join(".")} is ${issue.message}`,
+          message: `${issue.message}`,
+          field: issue.path.join(".") || "body",
         }));
-        if(detailError.length > 1) {
-          throw appError(400, "Invalid Request", detailError);
-        } else {
-          throw appError(400, detailError[0].message);
-        }
+        throw appError(400, "Bad Request", detailError);
+
       } else {
-        throw appError(400, "Invalid Request");
+        throw appError(400, "Bad Request");
       }
     }
   };

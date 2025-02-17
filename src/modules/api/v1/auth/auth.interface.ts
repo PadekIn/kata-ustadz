@@ -27,4 +27,10 @@ export interface ParamsIdRequest {
   Params: {
     id: string;
   }
+};
+
+export interface PayloadToken {
+  id: number;
+  role: string;
+  subscribeUntil?: Date | null;
 }

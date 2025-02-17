@@ -13,6 +13,7 @@ export const getAccountById = async (id: number) => {
     return await prisma.account.findUnique({
         where: {
             id,
+            deletedAt: null,
         }
     });
 };
@@ -21,6 +22,7 @@ export const getAccountByEmail = async (email: string) => {
     return await prisma.account.findUnique({
         where: {
             email,
+            deletedAt: null,
         },
     });
 };
@@ -35,7 +37,7 @@ export const createAccount = async (data: RegisterData) => {
                     fullname: data.fullname,
                     phone: data.phone,
                     gender: data.gender,
-                    birthdate: new Date(data.birthDate),
+                    birthDate: new Date(data.birthDate),
                     city: data.city,
                 }
             }
@@ -51,6 +53,7 @@ export const verifyAccount = async (id: number) => {
     return await prisma.account.update({
         where: {
             id,
+            deletedAt: null,
         },
         data: {
             isVerified: true,
@@ -62,6 +65,7 @@ export const updatePassword = async (id: number, password: string) => {
     return await prisma.account.update({
         where: {
             id,
+            deletedAt: null,
         },
         data: {
             password,

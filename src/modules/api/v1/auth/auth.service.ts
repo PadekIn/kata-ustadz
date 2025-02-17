@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import * as Account from "../../../../repositories/account.repo";
-import { LoginData, RegisterData, ResetPasswordData } from "./auth.interface";
+import { getUserByIdAccount } from "../../../../repositories/user.repo";
+import { LoginData, RegisterData, ResetPasswordData, PayloadToken } from "./auth.interface";
 import sendMail from "../../../../utils/sendMail";
 import { hashid, unhashid } from "../../../../utils/hashid";
 import appError from "../../../../utils/appError";
@@ -28,7 +29,7 @@ export const register = async (data: RegisterData) => {
 
 export const verify = async (hashId: string) => {
   const id = Number(unhashid(hashId)[0]);
-  
+
   if (!id) throw new Error("Invalid hashId");
 
   const account = await Account.getAccountById(id);
@@ -45,21 +46,45 @@ export const login = async (data: LoginData, app: FastifyInstance) => {
   const account = await Account.getAccountByEmail(data.email);
 
   if (!account) throw appError(400, "Bad Request", [{ message: "Email tidak terdaftar" }]);
+  if (!account.isVerified) throw appError(400, "Bad Request", [{ message: "Akun belum diverifikasi" }]);
+
   const isPasswordMatch = await bcrypt.compare(data.password, account.password);
   if (!isPasswordMatch) throw appError(400, "Bad Request", [{ message: "Password salah" }]);
 
-  const payload = {
-    id: account.id
-  };
+  let payload: PayloadToken;
+  let accountData;
+
+  if (account.role === "User") {
+    const user = await getUserByIdAccount(account.id);
+    if (!user) throw appError(404, "Not Found", [{ message: "Data user tidak ditemukan" }]);
+    payload = {
+      id: account.id,
+      role: account.role,
+      subscribeUntil: user.subscriptionUntil,
+    };
+
+    accountData = {
+      email: account.email,
+      role: account.role,
+      subscribeUntil: payload.subscribeUntil,
+    };
+  } else {
+    payload = {
+      id: account.id,
+      role: account.role,
+    };
+
+    accountData = {
+      email: account.email,
+      role: account.role,
+    };
+  }
+
   const jwtOptions = {
     expiresIn: Number(3600 * 24), // 1 day (3600s * 24)
   };
-  const token = app.jwt.sign(payload, jwtOptions);
 
-  const accountData = {
-    email: account.email,
-    role: account.role,
-  };
+  const token = app.jwt.sign(payload, jwtOptions);
 
   return { account: accountData, token };
 };
@@ -72,7 +97,7 @@ export const forgotPassword = async (data: { email: string }) => {
   const hashId = hashid(account.id);
   const url = process.env.FE_URL + "/reset-password/" + hashId;
   const mailData = {
-      url
+    url
   };
 
   await sendMail(data.email, "Reset Password", "forgot-password", mailData);

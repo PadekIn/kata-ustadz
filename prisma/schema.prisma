@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
   // directUrl = env("DIRECT_URL")
 }
 
@@ -51,6 +51,15 @@ enum CommissionStatus {
   Paid
 }
 
+enum PaymentStatus {
+  Pending
+  Settlement
+  Capture
+  Failed
+  Expired
+  Cancelled
+}
+
 model Account {
   id            Int       @id @default(autoincrement())
   email         String    @unique
@@ -63,28 +72,10 @@ model Account {
   updatedAt     DateTime  @updatedAt @map("updated_at")
   deletedAt     DateTime? @map("deleted_at")
 
+  Admin          Admin?
   User         User?
   WaitingList  WaitingList?
   Notification Notification[]
-
-  @@map("accounts")
-}
-
-model User {
-  id                Int       @id @default(autoincrement())
-  accountId         Int       @unique @map("account_id")
-  fullname          String    @map("fullname")
-  phone             String    @unique @map("phone")
-  gender            Gender
-  birthdate         DateTime  @map("birthdate")
-  city              String
-  job               String?
-  picture           String?
-  subscriptionUntil DateTime? @map("subscription_until")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
-
-  Account          Account            @relation(fields: [accountId], references: [id], onDelete: Cascade)
   Affiliate        Affiliate?
   Content          Content[]
   Order            Order[]
@@ -94,14 +85,60 @@ model User {
   Comment          Comment[]
   History          History[]
   Module           Module[]
-  moduleContent    moduleContent[]
+  moduleContent    ModuleContent[]
+
+  @@map("accounts")
+}
+
+model Admin {
+  id                Int       @id @default(autoincrement())
+  accountId         Int       @unique @map("account_id")
+  fullname          String    @map("fullname")
+  gender            Gender
+  phone             String    @unique @map("phone")
+  birthDate         DateTime  @map("birthdate")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  Account          Account            @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@map("admins")
+}
+
+model User {
+  id                Int       @id @default(autoincrement())
+  accountId         Int       @unique @map("account_id")
+  fullname          String    @map("fullname")
+  gender            Gender
+  birthDate         DateTime  @map("birthdate")
+  phone             String    @unique @map("phone")
+  city              String
+  job               String?
+  picture           String?
+  subscriptionUntil DateTime? @map("subscription_until")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  Account          Account            @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
   @@map("users")
 }
 
+model Ustadz {
+  id                Int       @id @default(autoincrement())
+  fullname          String    @map("fullname")
+  gender            Gender
+  phone             String    @unique @map("phone")
+  birthDate         DateTime  @map("birthdate")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@map("ustadz")
+}
+
 model WaitingList {
   id        Int      @id @default(autoincrement())
-  accountId Int      @map("account_id") @unique
+  accountId Int      @unique @map("account_id")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -112,12 +149,12 @@ model WaitingList {
 
 model Affiliate {
   id           Int    @id @default(autoincrement())
-  userId       Int    @unique @map("user_id")
+  accountId    Int    @unique @map("account_id")
   referralCode String @unique @map("referral_code")
   totalEarning Float  @default(0) @map("total_earning")
   totalPayout  Float  @default(0) @map("total_payout")
 
-  User       User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Account       Account?        @relation(fields: [accountId], references: [id], onDelete: Cascade)
   Commission Commission[]
   Order      Order[]
 
@@ -140,7 +177,7 @@ model Category {
 model Content {
   id         Int         @id @default(autoincrement())
   type       ContentType @default(Video)
-  ustadzName String      @map("ustadz_name")
+  ustadzId   String      @map("ustadz_id")
   bunnyId    String      @unique @map("bunny_id")
   url        String      @unique
   price      Int
@@ -150,10 +187,10 @@ model Content {
   updatedAt  DateTime    @updatedAt @map("updated_at")
   deletedAt  DateTime?   @map("deleted_at")
 
-  User User @relation(fields: [createBy], references: [id], onDelete: Cascade)
+  Account          Account @relation(fields: [createBy], references: [id], onDelete: Cascade)
 
   ContentCategory  ContentCategory[]
-  ModuleContent    moduleContent[]
+  ModuleContent    ModuleContent[]
   Comment          Comment[]
   Like             Like[]
   History          History[]
@@ -188,15 +225,15 @@ model Module {
   updatedAt   DateTime  @updatedAt @map("updated_at")
   deletedAt   DateTime? @map("deleted_at")
 
-  User User @relation(fields: [createBy], references: [id], onDelete: Cascade)
+  Account       Account @relation(fields: [createBy], references: [id], onDelete: Cascade)
 
-  ModuleContent moduleContent[]
+  ModuleContent ModuleContent[]
   WatchLater    WatchLater[]
 
   @@map("modules")
 }
 
-model moduleContent {
+model ModuleContent {
   moduleId  Int      @map("module_id")
   contentId Int      @map("content_id")
   index     Int
@@ -206,21 +243,21 @@ model moduleContent {
 
   Module  Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   Content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
-  User    User    @relation(fields: [createBy], references: [id], onDelete: Cascade)
+  Account Account @relation(fields: [createBy], references: [id], onDelete: Cascade)
 
   @@id([moduleId, contentId])
-  @@map("list_modules")
+  @@map("module_contents")
 }
 
 model History {
   id          Int       @id @default(autoincrement())
-  userId      Int       @map("user_id")
+  accountId      Int       @map("account_id")
   contentId   Int       @map("content_id")
   currentTime DateTime? @map("current_time")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
-  User    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Account Account    @relation(fields: [accountId], references: [id], onDelete: Cascade)
   Content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
 
   @@map("histories")
@@ -228,14 +265,14 @@ model History {
 
 model WatchLater {
   id        Int       @id @default(autoincrement())
-  userId    Int       @map("id_user")
+  accountId Int       @map("account_id")
   type      WatchType
-  contentId Int?      @map("id_content")
-  moduleId  Int?      @map("id_module")
+  contentId Int?      @map("content_id")
+  moduleId  Int?      @map("module_id")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
 
-  User    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Account Account     @relation(fields: [accountId], references: [id], onDelete: Cascade)
   Content Content? @relation(fields: [contentId], references: [id], onDelete: Cascade)
   Module  Module?  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
@@ -244,12 +281,12 @@ model WatchLater {
 
 model Like {
   id        Int      @id @default(autoincrement())
-  userId    Int      @map("user_id")
+  accountId Int      @map("account_id")
   contentId Int      @map("content_id")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  User    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Account Account    @relation(fields: [accountId], references: [id], onDelete: Cascade)
   Content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
 
   @@map("likes")
@@ -257,14 +294,14 @@ model Like {
 
 model Comment {
   id        Int       @id @default(autoincrement())
-  userId    Int       @map("user_id")
+  accountId Int       @map("account_id")
   contentId Int       @map("content_id")
   text      String
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  User    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
   Content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
 
   @@map("comments")
@@ -272,12 +309,12 @@ model Comment {
 
 model PurchasedContent {
   id        Int      @id @default(autoincrement())
-  userId    Int      @map("id_user")
+  accountId Int      @map("id_account")
   contentId Int      @map("id_content")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  User    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
   Content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
 
   @@map("purchased_contents")
@@ -289,34 +326,35 @@ model Packet {
   description String
   duration    Int
   price       Int
+  discount    Float     @default(0)
   isActive    Boolean   @default(true) @map("is_active")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
   deletedAt   DateTime? @map("deleted_at")
 
-  Order Order[]
+  Orders      Order[]   @relation("PacketOrders") // Tambahkan alias relasi agar lebih jelas
 
   @@map("packets")
 }
 
 model Order {
   id          Int         @id @default(autoincrement())
-  type        OrderType
-  userId      Int         @map("user_id")
-  packetId    Int?        @map("packet_id")
+  type        OrderType   
+  accountId   Int         @map("account_id")
+  packetId    Int?        @map("packet_id")  // Paket bisa opsional
   contentId   Int?        @map("content_id")
-  paymentId   String      @map("payment_id")
-  orderStatus OrderStatus
+  orderStatus OrderStatus @default(Unpaid) @map("order_status")
   activeUntil DateTime?   @map("active_until")
-  detailPrice Json
+  detailPrice Json        @map("detail_price")
   affiliateId Int?        @map("affiliate_id")
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
 
-  User       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Packet     Packet?      @relation(fields: [packetId], references: [id], onDelete: Cascade)
+  Account    Account      @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  Packet     Packet?      @relation(fields: [packetId], references: [id], onDelete: SetNull, name: "PacketOrders")
   Content    Content?     @relation(fields: [contentId], references: [id], onDelete: Cascade)
   Affiliate  Affiliate?   @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  Payment    Payment?
   Commission Commission[]
 
   @@map("orders")
@@ -324,18 +362,20 @@ model Order {
 
 model Payment {
   id            Int      @id @default(autoincrement())
+  orderId       Int      @map("order_id") @unique
   method        String
-  status        String
-  amount        Int
+  amount        Float
+  status        PaymentStatus @default(Pending) 
   payload       Json
   transactionId String   @map("transaction_id")
-  orderId       Int      @map("order_id")
   fraudStatus   String   @map("fraud_status")
   validUntil    DateTime @map("valid_until")
   date          DateTime @map("payment_date")
   token         String
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
+
+  Order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@map("payments")
 }
@@ -356,13 +396,15 @@ model Commission {
 }
 
 model Notification {
-  id          Int         @id @default(autoincrement())
-  accountId   Int         @map("account_id")
-  type        MessageType @default(Promotion)
-  title       String
-  description String
-  createdAt   DateTime    @default(now()) @map("created_at")
-  isRead      Boolean     @default(false) @map("is_read")
+  id        Int      @id @default(autoincrement())
+  accountId Int      @map("account_id")
+  type      String   @default("General")
+  title     String
+  message   String
+  isRead    Boolean  @default(false) @map("is_read")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   Account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
 

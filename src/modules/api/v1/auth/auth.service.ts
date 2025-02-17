@@ -52,7 +52,7 @@ export const login = async (data: LoginData, app: FastifyInstance) => {
     id: account.id
   };
   const jwtOptions = {
-    expiresIn: Number(3600 * 24), // 1 day 3600s * 24
+    expiresIn: Number(3600 * 24), // 1 day (3600s * 24)
   };
   const token = app.jwt.sign(payload, jwtOptions);
 

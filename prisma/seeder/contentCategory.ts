@@ -7,7 +7,7 @@ interface ContentCategoryData {
 
 export default async function contentCategory(prisma: any): Promise<void> {
     const workbook = xlsx.readFile("./prisma/seeder/data.xlsx");
-    const sheetName = workbook.SheetNames[3];
+    const sheetName = workbook.SheetNames[4];
     const sheet = workbook.Sheets[sheetName];
 
     const data: ContentCategoryData[] = xlsx.utils.sheet_to_json(sheet);

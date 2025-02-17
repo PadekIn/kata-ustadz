@@ -24,11 +24,6 @@ enum Role {
   User
 }
 
-enum Gender {
-  Male
-  Female
-}
-
 enum WatchType {
   Content
   Module
@@ -94,7 +89,7 @@ model Admin {
   id                Int       @id @default(autoincrement())
   accountId         Int       @unique @map("account_id")
   fullname          String    @map("fullname")
-  gender            Gender
+  gender            String
   phone             String    @unique @map("phone")
   birthDate         DateTime  @map("birthdate")
   createdAt         DateTime  @default(now()) @map("created_at")
@@ -109,8 +104,8 @@ model User {
   id                Int       @id @default(autoincrement())
   accountId         Int       @unique @map("account_id")
   fullname          String    @map("fullname")
-  gender            Gender
-  birthDate         DateTime  @map("birthdate")
+  gender            String
+  birthDate         DateTime  @map("birth_date")
   phone             String    @unique @map("phone")
   city              String
   job               String?
@@ -127,8 +122,8 @@ model User {
 model Ustadz {
   id                Int       @id @default(autoincrement())
   fullname          String    @map("fullname")
-  gender            Gender
-  phone             String    @unique @map("phone")
+  gender            String
+  phone             String?    @unique @map("phone")
   birthDate         DateTime  @map("birthdate")
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")
@@ -177,7 +172,7 @@ model Category {
 model Content {
   id         Int         @id @default(autoincrement())
   type       ContentType @default(Video)
-  ustadzId   String      @map("ustadz_id")
+  ustadzId   Int      @map("ustadz_id")
   bunnyId    String      @unique @map("bunny_id")
   url        String      @unique
   price      Int

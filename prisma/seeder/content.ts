@@ -2,7 +2,7 @@ import * as xlsx from "xlsx";
 
 interface ContentData {
     type: "Video" | "Audio"
-    ustadzName: string,
+    ustadzId: number,
     bunnyId: number,
     url: string,
     price: number,
@@ -12,7 +12,7 @@ interface ContentData {
 
 export default async function content(prisma: any): Promise<void> {
     const workbook = xlsx.readFile("./prisma/seeder/data.xlsx");
-    const sheetName = workbook.SheetNames[2];
+    const sheetName = workbook.SheetNames[3];
     const sheet = workbook.Sheets[sheetName];
 
     const data: ContentData[] = xlsx.utils.sheet_to_json(sheet);
@@ -29,7 +29,7 @@ async function createContent(prisma: any, item: ContentData): Promise<void> {
         await prisma.content.create({
             data: {
                 type: item.type,
-                ustadzName: item.ustadzName,
+                ustadzId: item.ustadzId,
                 bunnyId: item.bunnyId,
                 url: item.url,
                 price: item.price,
@@ -37,8 +37,8 @@ async function createContent(prisma: any, item: ContentData): Promise<void> {
                 isActive: item.isActive,
             },
         });
-        console.log(`✅ Data content ${item.ustadzName} berhasil ditambahkan.`);
+        console.log(`✅ Data content ${item.type} berhasil ditambahkan.`);
     } catch (error) {
-        console.error(`❌ Gagal menambahkan content ${item.ustadzName}: ${(error as Error).message}`);
+        console.error(`❌ Gagal menambahkan content ${item.type}: ${(error as Error).message}`);
     }
 }

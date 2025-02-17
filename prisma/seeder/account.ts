@@ -4,7 +4,7 @@ interface AccountData {
     fullname: string,
     phone: string,
     gender: "Male" | "Female",
-    birthdate: Date,
+    birthDate: Date,
     city: string,
     email: string,
     password: string,
@@ -29,23 +29,42 @@ export default async function account(prisma: any): Promise<void> {
 async function createAccount(prisma: any, item: AccountData): Promise<void> {
     try {
         item.password = await bcrypt.hash(item.password, 10);
-        await prisma.account.create({
-            data: {
-                email: item.email,
-                password: item.password,
-                role: item.role,
-                isVerified: item.isVerified,
-                User: {
-                    create: {
-                        fullname: item.fullname,
-                        phone: item.phone,
-                        gender: item.gender,
-                        birthdate: new Date(item.birthdate),
-                        city: item.city,
-                    }
+        if(item.role === "Admin") {
+            await prisma.account.create({
+                data: {
+                    email: item.email,
+                    password: item.password,
+                    role: item.role,
+                    isVerified: item.isVerified,
+                    Admin: {
+                        create: {
+                            fullname: item.fullname,
+                            gender: item.gender,
+                            phone: item.phone,
+                            birthDate: new Date(item.birthDate),
+                        }
+                    },
                 },
-            },
-        });
+            });
+        } else {
+            await prisma.account.create({
+                data: {
+                    email: item.email,
+                    password: item.password,
+                    role: item.role,
+                    isVerified: item.isVerified,
+                    User: {
+                        create: {
+                            fullname: item.fullname,
+                            phone: item.phone,
+                            gender: item.gender,
+                            birthDate: new Date(item.birthDate),
+                            city: item.city,
+                        }
+                    },
+                },
+            });
+        }
         console.log(`✅ Data ${item.fullname} berhasil ditambahkan.`);
     } catch (error) {
         console.error(`❌ Gagal menambahkan ${item.fullname}: ${(error as Error).message}`);

@@ -72,10 +72,10 @@ model Account {
   updatedAt     DateTime  @updatedAt @map("updated_at")
   deletedAt     DateTime? @map("deleted_at")
 
-  Admin          Admin?
-  User         User?
-  WaitingList  WaitingList?
-  Notification Notification[]
+  Admin            Admin?
+  User             User?
+  WaitingList      WaitingList?
+  Notification     Notification[]
   Affiliate        Affiliate?
   Content          Content[]
   Order            Order[]
@@ -85,7 +85,7 @@ model Account {
   Comment          Comment[]
   History          History[]
   Module           Module[]
-  moduleContent    ModuleContent[]
+  ModuleContent    ModuleContent[]
 
   @@map("accounts")
 }
@@ -154,7 +154,7 @@ model Affiliate {
   totalEarning Float  @default(0) @map("total_earning")
   totalPayout  Float  @default(0) @map("total_payout")
 
-  Account       Account?        @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  Account    Account        @relation(fields: [accountId], references: [id], onDelete: Cascade)
   Commission Commission[]
   Order      Order[]
 
@@ -362,7 +362,7 @@ model Order {
 
 model Payment {
   id            Int      @id @default(autoincrement())
-  orderId       Int      @map("order_id") @unique
+  orderId       Int      @unique @map("order_id")
   method        String
   amount        Float
   status        PaymentStatus @default(Pending) 

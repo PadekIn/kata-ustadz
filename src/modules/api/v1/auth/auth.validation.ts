@@ -9,7 +9,7 @@ const fullnameSchema = z.string({ message: "Nama lengkap dibutuhkan." })
     .max(30, { message: "Nama lengkap maksimal 30 karakter." })
     .nonempty({ message: "Nama lengkap tidak boleh kosong." });
 
-const genderSchema = z.enum(["Male", "Female"], { message: "Jenis kelamin harus 'Laki-laki' atau 'Perempuan'." });
+const genderSchema = z.enum(["Laki-laki", "Perempuan"], { message: "Jenis kelamin harus 'Laki-laki' atau 'Perempuan'." });
 
 const birthDateSchema = z.string({ message: "Tanggal lahir dibutuhkan." })
     .refine(date => {

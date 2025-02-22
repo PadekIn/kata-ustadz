@@ -14,5 +14,8 @@ COPY . .
 # Build TypeScript
 RUN npm run build
 
+# Copy folder views di src/views ke dist/views
+RUN cp -r src/views dist/views
+
 # Jalankan aplikasi
 CMD ["node", "dist/server.js"]
